@@ -1,0 +1,135 @@
+{
+  "root": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009",
+  "discovered_files": 163,
+  "inspected_files": 10,
+  "status_counts": {
+    "failed": 10
+  },
+  "extension_counts": {
+    ".xlsx": 127,
+    ".xls": 33,
+    ".csv": 3
+  },
+  "files": [
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\1004257.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\1004257.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 97222275,
+        "modified_at": "1519264248000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    },
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\1005.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\1005.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 105373,
+        "modified_at": "1519394792000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    },
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\126420.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\126420.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 11618190,
+        "modified_at": "1519394840000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    },
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\127721.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\127721.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 13636062,
+        "modified_at": "1519395980000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    },
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\130190.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\130190.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 22153034,
+        "modified_at": "1519395294000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    },
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\13503.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\13503.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 1292684,
+        "modified_at": "1519395218000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    },
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\150794.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\150794.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 8743093,
+        "modified_at": "1519394554000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    },
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\16500.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\16500.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 1564774,
+        "modified_at": "1519396264000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    },
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\16556.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\16556.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 1700897,
+        "modified_at": "1519396116000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    },
+    {
+      "source": {
+        "path": "C:\\Users\\daksh\\Desktop\\Intern\\AlphaCodeAI\\PeopleSearch\\data\\1 to 90 Categories Database\\2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009\\B2B-B2C\\B2B More\\16995.xlsx",
+        "relative_path": "B2B-B2C\\B2B More\\16995.xlsx",
+        "extension": ".xlsx",
+        "size_bytes": 1641516,
+        "modified_at": "1519394762000000000"
+      },
+      "status": "failed",
+      "sheets": [],
+      "warning": "RuntimeError: openpyxl is required for .xlsx inspection"
+    }
+  ]
+}
