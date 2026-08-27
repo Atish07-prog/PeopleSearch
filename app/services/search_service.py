@@ -9,6 +9,7 @@ class SearchService:
     def search(self, request: PersonSearchRequest) -> PersonSearchResponse:
         results = self._provider.search_people(request)
         return PersonSearchResponse(
+            query=request.query,
             total=results.total,
             limit=request.limit,
             offset=request.offset,

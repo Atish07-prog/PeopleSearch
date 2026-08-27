@@ -8,6 +8,7 @@ class Settings:
     app_env: str = os.getenv("APP_ENV", "local")
     sample_people_path: str = os.getenv("SAMPLE_PEOPLE_PATH", "data/sample/people.json")
     database_url: str = os.getenv("DATABASE_URL", "postgresql://people_search:people_search@localhost:5432/people_search")
+    search_provider: str = os.getenv("SEARCH_PROVIDER", "mock").lower()
 
 
 settings = Settings()
