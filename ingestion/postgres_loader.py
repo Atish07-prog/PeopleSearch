@@ -96,6 +96,18 @@ class PostgresStagingLoader:
             )
         self._connection.commit()
 
+    def fail_run(self, run_id: uuid.UUID, summary: dict) -> None:
+        with self._connection.cursor() as cursor:
+            cursor.execute(
+                """
+                UPDATE ingestion_runs
+                SET status = %s, completed_at = CURRENT_TIMESTAMP, summary = %s
+                WHERE id = %s
+                """,
+                ("failed", _json(summary), run_id),
+            )
+        self._connection.commit()
+
     def close(self) -> None:
         self._connection.close()
 
