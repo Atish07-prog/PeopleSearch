@@ -48,3 +48,15 @@ After starting PostgreSQL and applying migrations, write at most 100 rows from t
 ```powershell
 .\.venv\Scripts\python.exe -m ingestion.load_cli "data/1 to 90 Categories Database/2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009" --source "B2B-B2C/B2B More/1005.xlsx" --max-rows-per-file 100 --execute
 ```
+
+## Phase 6: canonical search profiles
+
+Phase 6 promotes staged, non-duplicate rows into `search_profiles` through a second idempotent migration-backed step. Original values stay in staging; the canonical profile stores comparison-normalized forms for name, email, phone, and website. Category 2 records are explicitly marked `unclassified` because a source `Name` may identify a business rather than a person.
+
+Apply the new migration, then use the `run_id` printed by the pilot loader to plan or execute promotion:
+
+```powershell
+.\.venv\Scripts\python.exe -m alembic upgrade head
+.\.venv\Scripts\python.exe -m ingestion.promote_cli --run-id "PUT-PILOT-RUN-ID-HERE"
+.\.venv\Scripts\python.exe -m ingestion.promote_cli --run-id "PUT-PILOT-RUN-ID-HERE" --execute
+```
