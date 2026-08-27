@@ -161,7 +161,7 @@
     <main>
       <header>
         <h1>People Search</h1>
-        <p>Search the local mock people dataset by name, role, company, location, or skill.</p>
+        <p>Search people and business contacts by name.</p>
       </header>
 
       <form id="search-form">
@@ -170,7 +170,7 @@
           name="query"
           type="search"
           autocomplete="off"
-          placeholder="Try Maya, engineer, python, Northstar..."
+          placeholder="Search a name..."
         />
         <button id="submit" type="submit">Search</button>
       </form>
@@ -190,28 +190,24 @@
         summary.textContent = `${payload.total} result${payload.total === 1 ? "" : "s"}`;
 
         if (payload.results.length === 0) {
-          results.innerHTML = '<div class="empty">No people matched that search.</div>';
+          results.innerHTML = '<div class="empty">No records matched that search.</div>';
           return;
         }
 
         results.innerHTML = payload.results
           .map((person) => {
-            const role = [person.title, person.company].filter(Boolean).join(" at ");
-            const location = person.location ? `<span>${person.location}</span>` : "";
+            const role = [person.designation, person.company].filter(Boolean).join(" at ");
             const email = person.email ? `<span>${person.email}</span>` : "";
-            const skills = person.skills
-              .map((skill) => `<span class="skill">${skill}</span>`)
-              .join("");
+            const phone = person.phone ? `<span>${person.phone}</span>` : "";
 
             return `
               <article class="person">
-                <h2>${person.full_name}</h2>
+                <h2>${person.name}</h2>
                 <div class="meta">
                   ${role ? `<span>${role}</span>` : ""}
-                  ${location}
                   ${email}
+                  ${phone}
                 </div>
-                <div class="skills">${skills}</div>
               </article>
             `;
           })

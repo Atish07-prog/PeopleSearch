@@ -5,7 +5,7 @@ from app.api.schemas.person import Person
 from app.api.schemas.search import PersonSearchRequest
 from app.core.config import settings
 from app.providers.base import SearchResults
-from app.utils.normalization import matches_all_terms, matches_any_term, normalized_terms
+from app.utils.normalization import matches_all_terms, normalized_terms
 
 
 class MockPeopleProvider:
@@ -22,33 +22,24 @@ class MockPeopleProvider:
 
     def _load_people(self) -> list[Person]:
         raw_people = json.loads(self._data_path.read_text(encoding="utf-8"))
-        return [Person.model_validate(person) for person in raw_people]
+        return [
+            Person(
+                id=person["id"],
+                name=person["full_name"],
+                designation=person.get("title"),
+                company=person.get("company"),
+                email=person.get("email"),
+                website=person.get("profile_url"),
+            )
+            for person in raw_people
+        ]
 
     def _matches(self, person: Person, request: PersonSearchRequest) -> bool:
-        return (
-            self._matches_query(person, request.query)
-            and matches_any_term(person.company, request.companies)
-            and matches_any_term(person.location, request.locations)
-            and matches_any_term(person.title, request.titles)
-            and matches_all_terms(" ".join(person.skills), request.skills)
-        )
+        return self._matches_query(person, request.query)
 
     def _matches_query(self, person: Person, query: str) -> bool:
         terms = normalized_terms(query)
         if not terms:
             return True
 
-        searchable = " ".join(
-            value
-            for value in [
-                person.full_name,
-                person.title,
-                person.company,
-                person.location,
-                person.email,
-                person.profile_url,
-                *person.skills,
-            ]
-            if value
-        )
-        return matches_all_terms(searchable, terms)
+        return matches_all_terms(person.name, terms)
