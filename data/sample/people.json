@@ -1,0 +1,57 @@
+[
+  {
+    "id": "per_001",
+    "full_name": "Maya Srinivasan",
+    "title": "Senior Data Engineer",
+    "company": "Northstar Analytics",
+    "location": "Bengaluru, India",
+    "email": "maya.srinivasan@example.test",
+    "profile_url": "https://example.test/people/maya-srinivasan",
+    "skills": ["python", "airflow", "data modeling", "analytics"],
+    "source": "mock"
+  },
+  {
+    "id": "per_002",
+    "full_name": "Ethan Brooks",
+    "title": "Product Manager",
+    "company": "Acme Health",
+    "location": "Austin, TX",
+    "email": "ethan.brooks@example.test",
+    "profile_url": "https://example.test/people/ethan-brooks",
+    "skills": ["roadmaps", "experimentation", "healthtech"],
+    "source": "mock"
+  },
+  {
+    "id": "per_003",
+    "full_name": "Priya Nair",
+    "title": "Backend Engineer",
+    "company": "SignalForge",
+    "location": "Seattle, WA",
+    "email": "priya.nair@example.test",
+    "profile_url": "https://example.test/people/priya-nair",
+    "skills": ["fastapi", "postgresql", "python", "apis"],
+    "source": "mock"
+  },
+  {
+    "id": "per_004",
+    "full_name": "Lucas Martin",
+    "title": "Sales Operations Lead",
+    "company": "Northstar Analytics",
+    "location": "Chicago, IL",
+    "email": "lucas.martin@example.test",
+    "profile_url": "https://example.test/people/lucas-martin",
+    "skills": ["crm", "revenue operations", "analytics"],
+    "source": "mock"
+  },
+  {
+    "id": "per_005",
+    "full_name": "Aisha Coleman",
+    "title": "Machine Learning Engineer",
+    "company": "Beacon Labs",
+    "location": "New York, NY",
+    "email": "aisha.coleman@example.test",
+    "profile_url": "https://example.test/people/aisha-coleman",
+    "skills": ["python", "model evaluation", "search relevance"],
+    "source": "mock"
+  }
+]
