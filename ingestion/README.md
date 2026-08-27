@@ -32,3 +32,19 @@ Start the local database and apply the schema after recreating the Python enviro
 docker compose up -d postgres
 .\.venv\Scripts\python.exe -m alembic upgrade head
 ```
+
+## Phase 5: bounded real-data pilot
+
+Phase 5 wires the readers, validation, exact-row deduplication, and PostgreSQL staging loader together. It is deliberately bounded by source-file and row limits, and it defaults to dry-run mode. The exact-row fingerprint registry is retained locally in `.ingestion-state/` so a resumed pilot makes the same duplicate decisions.
+
+Inspect the planned pilot without writing to PostgreSQL:
+
+```powershell
+.\.venv\Scripts\python.exe -m ingestion.load_cli "data/1 to 90 Categories Database/2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009" --source "B2B-B2C/B2B More/1005.xlsx"
+```
+
+After starting PostgreSQL and applying migrations, write at most 100 rows from that small source file:
+
+```powershell
+.\.venv\Scripts\python.exe -m ingestion.load_cli "data/1 to 90 Categories Database/2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009" --source "B2B-B2C/B2B More/1005.xlsx" --max-rows-per-file 100 --execute
+```
