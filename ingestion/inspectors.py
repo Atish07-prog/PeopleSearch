@@ -15,7 +15,7 @@ def inspect_file(source: SourceFile) -> FileInspection:
         if source.extension == ".xlsx":
             return FileInspection(source=source, status="inspected", sheets=_inspect_xlsx(path))
         if source.extension == ".xls":
-            return FileInspection(source=source, status="deferred", warning=".xls support will be added in Phase 2")
+            return FileInspection(source=source, status="inspected", sheets=_inspect_xls(path))
         return FileInspection(source=source, status="unsupported")
     except Exception as error:  # Individual bad workbooks must not stop a batch audit.
         return FileInspection(source=source, status="failed", warning=f"{type(error).__name__}: {error}")
@@ -47,6 +47,25 @@ def _inspect_xlsx(path: Path) -> list[SheetInspection]:
         ]
     finally:
         workbook.close()
+
+
+def _inspect_xls(path: Path) -> list[SheetInspection]:
+    try:
+        import xlrd
+    except ImportError as error:
+        raise RuntimeError("xlrd is required for .xls inspection") from error
+
+    workbook = xlrd.open_workbook(path, on_demand=True)
+    try:
+        inspections = []
+        for sheet_name in workbook.sheet_names():
+            sheet = workbook.sheet_by_name(sheet_name)
+            rows = [sheet.row_values(index, end_colx=DEFAULT_HEADER_MAX_COLUMNS) for index in range(min(sheet.nrows, DEFAULT_HEADER_SCAN_ROWS))]
+            inspections.append(_detect_header(sheet_name, rows))
+            workbook.unload_sheet(sheet_name)
+        return inspections
+    finally:
+        workbook.release_resources()
 
 
 def _limited_rows(rows: Iterable[Iterable[object]], limit: int) -> Iterable[list[object]]:

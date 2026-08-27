@@ -41,3 +41,23 @@ class FileInspection:
 
     def to_dict(self) -> dict:
         return asdict(self)
+
+
+@dataclass(frozen=True)
+class StagedRecord:
+    """One source row prepared for later validation and database staging.
+
+    ``raw_cells`` deliberately keeps every source cell in order. Later exact
+    deduplication must use this complete row, not just the mapped fields.
+    """
+
+    source_relative_path: str
+    source_sheet: str
+    source_row_number: int
+    source_headers: list[str]
+    raw_cells: list[str]
+    raw_values: dict[str, str]
+    mapped_values: dict[str, str]
+
+    def to_dict(self) -> dict:
+        return asdict(self)
