@@ -21,3 +21,14 @@ python -m ingestion.cli "data/1 to 90 Categories Database/2. B2B _ B2C SME Busin
 Preview reports include source contact data and must remain local; do not commit them.
 
 Phase 3 normalizes values for comparison, reports non-destructive validation warnings, and adds a persistent exact-row deduplicator. Exact duplicate matching includes every normalized header and cell in its original order; it never decides from only name, email, or phone. The registry stores the first source file, sheet, and row that produced each fingerprint.
+
+## Phase 4: PostgreSQL staging
+
+Phase 4 adds the durable database boundary: Alembic migrations create `ingestion_runs`, `source_files`, and `staged_records`. Staged rows preserve raw data, validation warnings, exact-row fingerprints, and complete provenance. The canonical searchable-profile transformation is deliberately deferred until a small real-data load confirms the mappings.
+
+Start the local database and apply the schema after recreating the Python environment:
+
+```powershell
+docker compose up -d postgres
+.\.venv\Scripts\python.exe -m alembic upgrade head
+```

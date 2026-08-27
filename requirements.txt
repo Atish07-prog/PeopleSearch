@@ -4,3 +4,6 @@ httpx
 pytest
 openpyxl
 xlrd
+SQLAlchemy
+alembic
+psycopg[binary]
