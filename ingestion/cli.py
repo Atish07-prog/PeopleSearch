@@ -1,10 +1,12 @@
 import argparse
 from pathlib import Path
 
+from app.core.environment import load_project_environment
 from ingestion.pipeline import audit_dataset, preview_staged_records, write_audit_report
 
 
 def main() -> None:
+    load_project_environment()
     parser = argparse.ArgumentParser(description="Audit tabular sources before ingestion.")
     parser.add_argument("root", type=Path, help="Category or dataset root to inspect")
     parser.add_argument("--output", type=Path, default=Path("reports/dataset-audit.json"))

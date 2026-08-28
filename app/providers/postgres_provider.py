@@ -17,7 +17,10 @@ class PostgresPeopleProvider:
             raise RuntimeError("psycopg is required for PostgreSQL search") from error
 
         terms = normalized_terms(request.query)
-        predicates = ["normalized_name LIKE %s ESCAPE '\\'" for _ in terms]
+        # Historical profiles may contain source placeholders as names. Do not
+        # return an empty display name after response normalization.
+        predicates = ["lower(btrim(display_name)) NOT IN ('null', 'none', 'n/a', 'na')"]
+        predicates.extend("normalized_name LIKE %s ESCAPE '\\'" for _ in terms)
         where_clause = " AND ".join(predicates) or "TRUE"
         patterns = [_like_pattern(term) for term in terms]
         normalized_query = normalize_text(request.query)
@@ -41,7 +44,16 @@ class PostgresPeopleProvider:
                 """,
                 [*patterns, normalized_query, _prefix_pattern(normalized_query), request.limit, request.offset],
             )
-            people = [Person(id=str(row[0]), name=row[1], email=row[2], phone=row[3], website=row[4]) for row in cursor.fetchall()]
+            people = [
+                Person(
+                    id=str(row[0]),
+                    name=_display_value(row[1]) or "",
+                    email=_display_value(row[2]),
+                    phone=_display_value(row[3]),
+                    website=_display_value(row[4]),
+                )
+                for row in cursor.fetchall()
+            ]
         return SearchResults(total=total, people=people)
 
 
@@ -55,3 +67,9 @@ def _prefix_pattern(term: str) -> str:
 
 def _escape_like(term: str) -> str:
     return term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def _display_value(value: str | None) -> str | None:
+    """Avoid exposing common source placeholders as contact data."""
+    value = (value or "").strip()
+    return value if value and value.casefold() not in {"null", "none", "n/a", "na"} else None

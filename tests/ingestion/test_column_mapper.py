@@ -13,3 +13,11 @@ def test_maps_category_two_justdial_headers() -> None:
         "city": "City",
         "website": "Website",
     }
+
+
+def test_maps_compact_business_name_header() -> None:
+    assert map_columns(["BusinessName", "Mobile", "Email"]) == {
+        "name": "BusinessName",
+        "email": "Email",
+        "phone": "Mobile",
+    }

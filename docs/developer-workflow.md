@@ -2,6 +2,9 @@
 
 The project now has a small command layer for local development. Activate the virtual environment, then run commands from the repository root.
 
+All application, Alembic, and ingestion commands automatically load repository
+``.env`` values. Variables already set in the shell take precedence.
+
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```

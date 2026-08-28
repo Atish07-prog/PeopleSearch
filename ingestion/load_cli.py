@@ -3,12 +3,14 @@ import json
 import os
 from pathlib import Path
 
+from app.core.environment import load_project_environment
 from ingestion.deduplicator import ExactRowDeduplicator
 from ingestion.pilot import plan_pilot, run_pilot
 from ingestion.postgres_loader import PostgresStagingLoader
 
 
 def main() -> None:
+    load_project_environment()
     parser = argparse.ArgumentParser(description="Run a bounded real-data PostgreSQL staging pilot.")
     parser.add_argument("root", type=Path, help="Dataset category root")
     parser.add_argument("--source", type=Path, help="Optional source file relative to root")

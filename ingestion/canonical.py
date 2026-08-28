@@ -45,7 +45,7 @@ def canonicalize_mapped_values(values: dict[str, str]) -> CanonicalProfile | Non
 
 def _optional(value: str | None) -> str | None:
     value = (value or "").strip()
-    return value or None
+    return value if value and value.casefold() not in {"null", "none", "n/a", "na"} else None
 
 
 def _phone_digits(value: str | None) -> str | None:

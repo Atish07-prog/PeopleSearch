@@ -4,12 +4,14 @@ import os
 import uuid
 from pathlib import Path
 
+from app.core.environment import load_project_environment
 from ingestion.category import plan_category, run_category
 from ingestion.deduplicator import ExactRowDeduplicator
 from ingestion.postgres_loader import PostgresStagingLoader
 
 
 def main() -> None:
+    load_project_environment()
     parser = argparse.ArgumentParser(description="Run a resumable, file-level Category ingestion batch.")
     parser.add_argument("root", type=Path, help="Dataset category root")
     parser.add_argument("--max-files", type=int, required=True, help="Maximum source files for this invocation")

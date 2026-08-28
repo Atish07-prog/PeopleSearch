@@ -3,10 +3,12 @@ import json
 import os
 import uuid
 
+from app.core.environment import load_project_environment
 from ingestion.promoter import PostgresProfilePromoter
 
 
 def main() -> None:
+    load_project_environment()
     parser = argparse.ArgumentParser(description="Promote a staged ingestion run into canonical search profiles.")
     parser.add_argument("--run-id", type=uuid.UUID, required=True)
     parser.add_argument("--database-url", default=os.getenv("DATABASE_URL"))

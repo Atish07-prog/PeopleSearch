@@ -1,6 +1,11 @@
 import os
 from dataclasses import dataclass
 
+from app.core.environment import load_project_environment
+
+
+load_project_environment()
+
 
 @dataclass(frozen=True)
 class Settings:
