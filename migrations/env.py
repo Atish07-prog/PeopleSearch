@@ -4,7 +4,10 @@ import os
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+from app.core.environment import load_project_environment
 
+
+load_project_environment()
 config = context.config
 if database_url := os.getenv("DATABASE_URL"):
     # Application code uses Psycopg's standard postgresql:// URL. SQLAlchemy

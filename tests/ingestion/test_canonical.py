@@ -25,3 +25,11 @@ def test_canonical_profile_preserves_display_values_and_normalizes_for_search() 
 
 def test_record_without_mapped_name_is_not_promoted() -> None:
     assert canonicalize_mapped_values({"email": "asha@example.com"}) is None
+
+
+def test_canonicalization_drops_literal_null_contact_placeholders() -> None:
+    profile = canonicalize_mapped_values({"name": "Asha Stores", "email": "NULL", "phone": "n/a"})
+
+    assert profile is not None
+    assert profile.email is None
+    assert profile.phone is None

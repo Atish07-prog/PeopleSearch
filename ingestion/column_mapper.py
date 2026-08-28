@@ -3,7 +3,7 @@ from collections.abc import Sequence
 
 
 FIELD_ALIASES: dict[str, frozenset[str]] = {
-    "name": frozenset({"name", "business name", "company name", "company", "organisation name", "organization name", "contact name", "full name"}),
+    "name": frozenset({"name", "business name", "businessname", "company name", "company", "organisation name", "organization name", "contact name", "full name"}),
     "email": frozenset({"email", "email address", "e mail", "e-mail"}),
     "phone": frozenset({"phone", "phone no", "telephone", "contact", "contact number", "mobile", "mobile number", "phone1", "phone 1"}),
     "address": frozenset({"address", "street address", "address1", "address 1"}),

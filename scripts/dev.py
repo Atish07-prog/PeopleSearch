@@ -25,6 +25,9 @@ DEFAULT_PILOT_SOURCE = Path("B2B-B2C/B2B More/1005.xlsx")
 
 
 def main() -> None:
+    from app.core.environment import load_project_environment
+
+    load_project_environment()
     parser = argparse.ArgumentParser(description="Local developer commands for People Search.")
     subcommands = parser.add_subparsers(dest="command", required=True)
 
