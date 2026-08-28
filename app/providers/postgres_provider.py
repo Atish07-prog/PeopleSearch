@@ -1,7 +1,7 @@
 from app.api.schemas.person import Person
 from app.api.schemas.search import PersonSearchRequest
 from app.providers.base import SearchResults
-from app.utils.normalization import normalized_terms
+from app.utils.normalization import normalize_text, normalized_terms
 
 
 class PostgresPeopleProvider:
@@ -20,6 +20,7 @@ class PostgresPeopleProvider:
         predicates = ["normalized_name LIKE %s ESCAPE '\\'" for _ in terms]
         where_clause = " AND ".join(predicates) or "TRUE"
         patterns = [_like_pattern(term) for term in terms]
+        normalized_query = normalize_text(request.query)
         with psycopg.connect(self._database_url) as connection, connection.cursor() as cursor:
             cursor.execute(f"SELECT count(*) FROM search_profiles WHERE {where_clause}", patterns)
             total = cursor.fetchone()[0]
@@ -28,15 +29,29 @@ class PostgresPeopleProvider:
                 SELECT id, display_name, email, phone, website
                 FROM search_profiles
                 WHERE {where_clause}
-                ORDER BY normalized_name, id
+                ORDER BY
+                    CASE
+                        WHEN normalized_name = %s THEN 0
+                        WHEN normalized_name LIKE %s ESCAPE '\\' THEN 1
+                        ELSE 2
+                    END,
+                    normalized_name,
+                    id
                 LIMIT %s OFFSET %s
                 """,
-                [*patterns, request.limit, request.offset],
+                [*patterns, normalized_query, _prefix_pattern(normalized_query), request.limit, request.offset],
             )
             people = [Person(id=str(row[0]), name=row[1], email=row[2], phone=row[3], website=row[4]) for row in cursor.fetchall()]
         return SearchResults(total=total, people=people)
 
 
 def _like_pattern(term: str) -> str:
-    escaped = term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-    return f"%{escaped}%"
+    return f"%{_escape_like(term)}%"
+
+
+def _prefix_pattern(term: str) -> str:
+    return f"{_escape_like(term)}%"
+
+
+def _escape_like(term: str) -> str:
+    return term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
