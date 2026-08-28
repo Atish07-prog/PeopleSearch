@@ -1,4 +1,4 @@
-# Ingestion Phases 1–3: audit, staging, and exact deduplication
+# Ingestion Phases 1–9: audit, staging, promotion, and category scaling
 
 The first ingestion step is read-only: it inventories supported tabular files and samples the first ten rows of each CSV/XLSX sheet to locate likely headers and map common contact fields. It does not load records, modify source files, or deduplicate data.
 
@@ -59,4 +59,26 @@ Apply the new migration, then use the `run_id` printed by the pilot loader to pl
 .\.venv\Scripts\python.exe -m alembic upgrade head
 .\.venv\Scripts\python.exe -m ingestion.promote_cli --run-id "PUT-PILOT-RUN-ID-HERE"
 .\.venv\Scripts\python.exe -m ingestion.promote_cli --run-id "PUT-PILOT-RUN-ID-HERE" --execute
+```
+
+## Phase 9: resumable category batches
+
+Phase 9 adds file-level progress tracking for a larger category load. Every completed source file records its staged-row count, exact-duplicate count, validation-warning count, and completion time. If a run stops, pass its `run_id` to `--resume-run-id`; files already marked complete are skipped.
+
+Always start with a dry run and a small number of files:
+
+```powershell
+python -m ingestion.scale_cli "data/1 to 90 Categories Database/2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009" --max-files 2
+```
+
+After reviewing the plan, stage two files with a conservative per-file cap:
+
+```powershell
+python -m ingestion.scale_cli "data/1 to 90 Categories Database/2. B2B _ B2C SME Business Corporate Industry Company 1 Crore-009" --max-files 2 --max-rows-per-file 1000 --execute
+```
+
+Use `--max-rows-per-file 0` only when intentionally processing complete files. To resume a stopped run:
+
+```powershell
+python -m ingestion.scale_cli "DATASET_ROOT" --max-files 2 --resume-run-id "RUN-ID" --execute
 ```

@@ -37,11 +37,74 @@ class PostgresStagingLoader:
                 INSERT INTO source_files
                     (id, ingestion_run_id, relative_path, extension, size_bytes, modified_at, status, warning)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT ON CONSTRAINT uq_source_files_run_path DO UPDATE
+                SET extension = EXCLUDED.extension,
+                    size_bytes = EXCLUDED.size_bytes,
+                    modified_at = EXCLUDED.modified_at,
+                    status = EXCLUDED.status,
+                    warning = EXCLUDED.warning,
+                    completed_at = NULL
+                RETURNING id
                 """,
                 (source_id, run_id, source.relative_path, source.extension, source.size_bytes, source.modified_at, inspection.status, inspection.warning),
             )
+            source_id = cursor.fetchone()[0]
         self._connection.commit()
         return source_id
+
+    def completed_source_paths(self, run_id: uuid.UUID) -> set[str]:
+        with self._connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT relative_path FROM source_files WHERE ingestion_run_id = %s AND status = 'completed'",
+                (run_id,),
+            )
+            return {row[0] for row in cursor.fetchall()}
+
+    def resume_run(self, run_id: uuid.UUID) -> uuid.UUID:
+        with self._connection.cursor() as cursor:
+            cursor.execute("UPDATE ingestion_runs SET status = 'running', completed_at = NULL WHERE id = %s RETURNING id", (run_id,))
+            resumed = cursor.fetchone()
+        if resumed is None:
+            raise ValueError(f"Ingestion run does not exist: {run_id}")
+        self._connection.commit()
+        return resumed[0]
+
+    def complete_source_file(
+        self,
+        source_id: uuid.UUID,
+        *,
+        staged_records: int,
+        exact_duplicates: int,
+        validation_warnings: int,
+    ) -> None:
+        with self._connection.cursor() as cursor:
+            cursor.execute(
+                """
+                UPDATE source_files
+                SET status = 'completed', completed_at = CURRENT_TIMESTAMP,
+                    staged_records = %s, exact_duplicates = %s, validation_warnings = %s
+                WHERE id = %s
+                """,
+                (staged_records, exact_duplicates, validation_warnings, source_id),
+            )
+        self._connection.commit()
+
+    def source_file_stats(self, source_id: uuid.UUID) -> tuple[int, int, int]:
+        """Read durable totals so resumed files keep accurate progress counters."""
+        with self._connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT
+                    count(*),
+                    count(*) FILTER (WHERE status = 'exact_duplicate'),
+                    COALESCE(sum(jsonb_array_length(validation_issues)), 0)
+                FROM staged_records
+                WHERE source_file_id = %s
+                """,
+                (source_id,),
+            )
+            row = cursor.fetchone()
+            return int(row[0]), int(row[1]), int(row[2])
 
     def stage_records(
         self,
