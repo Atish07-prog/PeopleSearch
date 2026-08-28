@@ -7,7 +7,10 @@ from sqlalchemy import engine_from_config, pool
 
 config = context.config
 if database_url := os.getenv("DATABASE_URL"):
-    config.set_main_option("sqlalchemy.url", database_url)
+    # Application code uses Psycopg's standard postgresql:// URL. SQLAlchemy
+    # needs an explicit dialect name to avoid trying the uninstalled psycopg2.
+    sqlalchemy_url = database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    config.set_main_option("sqlalchemy.url", sqlalchemy_url)
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
