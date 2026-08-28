@@ -12,6 +12,7 @@ def test_frontend_serves_search_page() -> None:
     assert response.status_code == 200
     assert "People Search" in response.text
     assert 'fetch("/search"' in response.text
+    assert 'summary.textContent = "Enter a name to search."' in response.text
 
 
 def test_search_endpoint_returns_canonical_response() -> None:
