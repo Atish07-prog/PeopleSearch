@@ -47,6 +47,17 @@ For a detailed, read-only report for one run:
 python -m ingestion.report_cli --run-id "RUN-ID"
 ```
 
+## Optional PostgreSQL integration checks
+
+The normal suite does not need a database. To verify PostgreSQL ranking and
+placeholder filtering against isolated, automatically removed fixture rows,
+point this variable at a local database with migrations already applied:
+
+```powershell
+$env:POSTGRES_INTEGRATION_DATABASE_URL = $env:DATABASE_URL
+python -m pytest -q -m integration
+```
+
 ### Run tests
 
 ```powershell

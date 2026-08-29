@@ -21,13 +21,13 @@ def validate_record(record: StagedRecord) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     if optional_text(values.get("name")) is None:
         issues.append(ValidationIssue("name", "missing", "No mapped name value"))
-    if email := values.get("email", "").strip():
+    if email := optional_text(values.get("email")):
         if not _looks_like_email(email):
             issues.append(ValidationIssue("email", "invalid_format", "Email does not have a basic valid shape"))
-    if phone := values.get("phone", "").strip():
+    if phone := optional_text(values.get("phone")):
         if len(re.sub(r"\D", "", phone)) < 7:
             issues.append(ValidationIssue("phone", "invalid_format", "Phone has fewer than seven digits"))
-    if website := values.get("website", "").strip():
+    if website := optional_text(values.get("website")):
         if " " in website or "." not in website:
             issues.append(ValidationIssue("website", "invalid_format", "Website does not have a basic valid shape"))
     return issues
