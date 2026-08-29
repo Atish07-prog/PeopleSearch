@@ -38,6 +38,30 @@ python -m ingestion.remap_cli --run-id "RUN-ID" --execute
 python -m ingestion.promote_cli --run-id "RUN-ID" --execute
 ```
 
+## Operational reporting
+
+Use the read-only report command after every bounded run and promotion. It
+reports source-file status and failures, staged and duplicate counts, warning
+categories, mapped-name coverage by source header, and promotion progress
+without printing raw contact data. Validation-warning totals are retained from
+the original staging pass; compare them with current mapped-name coverage after
+a reconciliation.
+
+```powershell
+python -m ingestion.report_cli --run-id "RUN-ID"
+```
+
+## Cleanup placeholder canonical profiles
+
+If a historic run promoted literal placeholder names before canonical validation
+was tightened, inspect and remove only those derived profiles. This command
+never deletes staged records, raw values, or provenance.
+
+```powershell
+python -m ingestion.cleanup_cli --run-id "RUN-ID"
+python -m ingestion.cleanup_cli --run-id "RUN-ID" --execute
+```
+
 Start the local database and apply the schema after recreating the Python environment:
 
 ```powershell

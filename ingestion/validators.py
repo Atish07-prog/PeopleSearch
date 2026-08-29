@@ -2,6 +2,7 @@ import re
 from dataclasses import asdict, dataclass
 
 from ingestion.models import StagedRecord
+from ingestion.canonical import optional_text
 
 
 @dataclass(frozen=True)
@@ -18,7 +19,7 @@ def validate_record(record: StagedRecord) -> list[ValidationIssue]:
     """Report questionable mapped values without rejecting or changing a row."""
     values = record.mapped_values
     issues: list[ValidationIssue] = []
-    if not values.get("name", "").strip():
+    if optional_text(values.get("name")) is None:
         issues.append(ValidationIssue("name", "missing", "No mapped name value"))
     if email := values.get("email", "").strip():
         if not _looks_like_email(email):

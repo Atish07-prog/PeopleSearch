@@ -4,6 +4,9 @@ from dataclasses import asdict, dataclass
 from ingestion.normalizers import normalize_comparison_text
 
 
+PLACEHOLDER_VALUES = frozenset({"null", "none", "n/a", "na"})
+
+
 @dataclass(frozen=True)
 class CanonicalProfile:
     record_type: str
@@ -23,12 +26,12 @@ class CanonicalProfile:
 
 def canonicalize_mapped_values(values: dict[str, str]) -> CanonicalProfile | None:
     """Create a search profile without discarding the original mapped values."""
-    display_name = _optional(values.get("name"))
+    display_name = optional_text(values.get("name"))
     if display_name is None:
         return None
-    email = _optional(values.get("email"))
-    phone = _optional(values.get("phone"))
-    website = _optional(values.get("website"))
+    email = optional_text(values.get("email"))
+    phone = optional_text(values.get("phone"))
+    website = optional_text(values.get("website"))
     return CanonicalProfile(
         record_type="unclassified",
         display_name=display_name,
@@ -37,15 +40,15 @@ def canonicalize_mapped_values(values: dict[str, str]) -> CanonicalProfile | Non
         normalized_email=normalize_comparison_text(email) if email else None,
         phone=phone,
         normalized_phone=_phone_digits(phone),
-        location=_optional(values.get("city")),
+        location=optional_text(values.get("city")),
         website=website,
         normalized_website=_normalized_website(website),
     )
 
 
-def _optional(value: str | None) -> str | None:
-    value = (value or "").strip()
-    return value if value and value.casefold() not in {"null", "none", "n/a", "na"} else None
+def optional_text(value: object) -> str | None:
+    value = str(value or "").strip()
+    return value if value and value.casefold() not in PLACEHOLDER_VALUES else None
 
 
 def _phone_digits(value: str | None) -> str | None:
