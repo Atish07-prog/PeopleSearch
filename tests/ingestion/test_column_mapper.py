@@ -29,3 +29,11 @@ def test_maps_compact_camel_case_contact_headers() -> None:
         "email": "EmailID",
         "phone": "MobileNo",
     }
+
+
+def test_maps_hyphenated_firm_name_and_numbered_mobile() -> None:
+    assert map_columns(["Firm-Name", "Mobile1", "City"]) == {
+        "name": "Firm-Name",
+        "phone": "Mobile1",
+        "city": "City",
+    }
