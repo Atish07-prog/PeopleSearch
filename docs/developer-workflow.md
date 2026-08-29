@@ -41,6 +41,12 @@ python scripts/dev.py status
 
 This prints counts for ingestion runs, staged-record statuses, and canonical search profiles.
 
+For a detailed, read-only report for one run:
+
+```powershell
+python -m ingestion.report_cli --run-id "RUN-ID"
+```
+
 ### Run tests
 
 ```powershell
