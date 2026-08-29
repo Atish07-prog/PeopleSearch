@@ -21,3 +21,11 @@ def test_maps_compact_business_name_header() -> None:
         "email": "Email",
         "phone": "Mobile",
     }
+
+
+def test_maps_compact_camel_case_contact_headers() -> None:
+    assert map_columns(["CompanyName", "ContactName", "MobileNo", "EmailID"]) == {
+        "name": "CompanyName",
+        "email": "EmailID",
+        "phone": "MobileNo",
+    }
