@@ -51,3 +51,22 @@ def test_validation_warns_but_does_not_change_source_values() -> None:
 
     assert [issue.code for issue in issues] == ["invalid_format"]
     assert record.mapped_values["email"] == "not-an-email"
+
+
+def test_validation_treats_contact_placeholders_as_absent() -> None:
+    record = _record(["NULL", "N/A", "Pune", "kept"])
+    record = StagedRecord(
+        source_relative_path=record.source_relative_path,
+        source_sheet=record.source_sheet,
+        source_row_number=record.source_row_number,
+        source_headers=record.source_headers,
+        raw_cells=record.raw_cells,
+        raw_values=record.raw_values,
+        mapped_values={"name": "NULL", "email": "N/A", "phone": "None", "website": "NA"},
+    )
+
+    issues = validate_record(record)
+
+    assert [issue.to_dict() for issue in issues] == [
+        {"field": "name", "code": "missing", "message": "No mapped name value"}
+    ]
