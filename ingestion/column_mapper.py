@@ -4,8 +4,8 @@ from collections.abc import Sequence
 
 FIELD_ALIASES: dict[str, frozenset[str]] = {
     "name": frozenset({"name", "business name", "businessname", "company name", "company", "organisation name", "organization name", "contact name", "full name"}),
-    "email": frozenset({"email", "email address", "e mail", "e-mail"}),
-    "phone": frozenset({"phone", "phone no", "telephone", "contact", "contact number", "mobile", "mobile number", "phone1", "phone 1"}),
+    "email": frozenset({"email", "email address", "email id", "e mail", "e-mail"}),
+    "phone": frozenset({"phone", "phone no", "telephone", "contact", "contact number", "mobile", "mobile no", "mobile number", "phone1", "phone 1"}),
     "address": frozenset({"address", "street address", "address1", "address 1"}),
     "city": frozenset({"city", "citylocation", "location", "town"}),
     "pincode": frozenset({"pincode", "pin code", "postal code", "zipcode", "zip"}),
@@ -14,7 +14,8 @@ FIELD_ALIASES: dict[str, frozenset[str]] = {
 
 
 def normalize_header(value: object) -> str:
-    return re.sub(r"\s+", " ", str(value or "").strip().lower().replace("_", " ")).strip()
+    header = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", str(value or "").strip())
+    return re.sub(r"\s+", " ", header.lower().replace("_", " ")).strip()
 
 
 def map_columns(headers: Sequence[object]) -> dict[str, str]:
