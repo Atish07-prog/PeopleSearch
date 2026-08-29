@@ -13,6 +13,9 @@ def test_frontend_serves_search_page() -> None:
     assert "People Search" in response.text
     assert 'fetch("/search"' in response.text
     assert 'summary.textContent = "Enter a name to search."' in response.text
+    assert 'id="previous-page"' in response.text
+    assert 'id="next-page"' in response.text
+    assert "limit: PAGE_SIZE" in response.text
 
 
 def test_search_endpoint_returns_canonical_response() -> None:

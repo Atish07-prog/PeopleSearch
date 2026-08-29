@@ -101,6 +101,22 @@
         gap: 12px;
       }
 
+      .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .pagination button {
+        min-height: 40px;
+      }
+
+      .pagination span {
+        color: #5f6368;
+      }
+
       .person {
         border: 1px solid #ded8ce;
         border-radius: 8px;
@@ -163,6 +179,11 @@
 
       <div id="summary" class="summary"></div>
       <section id="results" class="results" aria-live="polite"></section>
+      <nav id="pagination" class="pagination" aria-label="Search result pages" hidden>
+        <button id="previous-page" type="button">Previous</button>
+        <span id="page-details"></span>
+        <button id="next-page" type="button">Next</button>
+      </nav>
     </main>
 
     <script>
@@ -171,6 +192,13 @@
       const submit = document.querySelector("#submit");
       const summary = document.querySelector("#summary");
       const results = document.querySelector("#results");
+      const pagination = document.querySelector("#pagination");
+      const previousPage = document.querySelector("#previous-page");
+      const nextPage = document.querySelector("#next-page");
+      const pageDetails = document.querySelector("#page-details");
+      const PAGE_SIZE = 10;
+      let currentQuery = "";
+      let currentOffset = 0;
 
       function escapeHtml(value) {
         const element = document.createElement("span");
@@ -179,7 +207,14 @@
       }
 
       function renderPeople(payload) {
-        summary.textContent = `${payload.total} result${payload.total === 1 ? "" : "s"}`;
+        const firstResult = payload.total === 0 ? 0 : payload.offset + 1;
+        const lastResult = Math.min(payload.offset + payload.results.length, payload.total);
+        summary.textContent = `Showing ${firstResult}-${lastResult} of ${payload.total} result${payload.total === 1 ? "" : "s"}`;
+        currentOffset = payload.offset;
+        pagination.hidden = payload.total <= PAGE_SIZE;
+        previousPage.disabled = payload.offset === 0;
+        nextPage.disabled = payload.offset + payload.results.length >= payload.total;
+        pageDetails.textContent = `Page ${Math.floor(payload.offset / PAGE_SIZE) + 1}`;
 
         if (payload.results.length === 0) {
           results.innerHTML = '<div class="empty">No records matched that search.</div>';
@@ -208,8 +243,10 @@
           .join("");
       }
 
-      async function search(query = "") {
+      async function search(query, offset = 0) {
         submit.disabled = true;
+        previousPage.disabled = true;
+        nextPage.disabled = true;
         summary.textContent = "Searching...";
         results.innerHTML = "";
 
@@ -217,17 +254,19 @@
           const response = await fetch("/search", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query, limit: 10, offset: 0 }),
+            body: JSON.stringify({ query, limit: PAGE_SIZE, offset }),
           });
 
           if (!response.ok) {
             throw new Error(`Search failed with HTTP ${response.status}`);
           }
 
+          currentQuery = query;
           renderPeople(await response.json());
         } catch (error) {
           summary.textContent = "";
           results.innerHTML = `<div class="error">${error.message}</div>`;
+          pagination.hidden = true;
         } finally {
           submit.disabled = false;
         }
@@ -241,7 +280,15 @@
           results.innerHTML = "";
           return;
         }
-        search(query);
+        search(query, 0);
+      });
+
+      previousPage.addEventListener("click", () => {
+        search(currentQuery, Math.max(0, currentOffset - PAGE_SIZE));
+      });
+
+      nextPage.addEventListener("click", () => {
+        search(currentQuery, currentOffset + PAGE_SIZE);
       });
 
       summary.textContent = "Enter a name to search.";
