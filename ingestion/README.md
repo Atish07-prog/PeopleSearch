@@ -26,6 +26,18 @@ Phase 3 normalizes values for comparison, reports non-destructive validation war
 
 Phase 4 adds the durable database boundary: Alembic migrations create `ingestion_runs`, `source_files`, and `staged_records`. Staged rows preserve raw data, validation warnings, exact-row fingerprints, and complete provenance. The canonical searchable-profile transformation is deliberately deferred until a small real-data load confirms the mappings.
 
+## Reconcile improved mappings
+
+When a header mapping improves after records are staged, use the remap command
+against one existing run. It is dry-run by default and changes only derived
+`mapped_values`; raw values and source provenance remain untouched.
+
+```powershell
+python -m ingestion.remap_cli --run-id "RUN-ID"
+python -m ingestion.remap_cli --run-id "RUN-ID" --execute
+python -m ingestion.promote_cli --run-id "RUN-ID" --execute
+```
+
 Start the local database and apply the schema after recreating the Python environment:
 
 ```powershell
