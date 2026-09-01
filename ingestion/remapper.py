@@ -10,7 +10,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 
 from ingestion.canonical import canonicalize_mapped_values
-from ingestion.column_mapper import map_columns
+from ingestion.column_mapper import map_row_values
 
 
 @dataclass(frozen=True)
@@ -30,10 +30,11 @@ def derive_missing_mapped_values(
 ) -> dict[str, object]:
     """Fill missing derived mappings without overwriting an existing mapping."""
     reconciled = dict(mapped_values)
-    for field, source_header in map_columns(source_headers).items():
+    derived = map_row_values(source_headers, dict(raw_values))
+    for field, value in derived.items():
         if _has_value(reconciled.get(field)):
             continue
-        reconciled[field] = raw_values.get(source_header, "")
+        reconciled[field] = value
     return reconciled
 
 
@@ -109,4 +110,5 @@ class PostgresStagedRecordRemapper:
 
 
 def _has_value(value: object) -> bool:
-    return bool(str(value or "").strip())
+    normalized = str(value or "").strip().casefold()
+    return bool(normalized and normalized not in {"null", "none", "n/a", "na"})

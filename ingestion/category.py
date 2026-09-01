@@ -66,28 +66,51 @@ def run_category(
             statuses[inspection.status] += 1
             source_id = loader.register_source_file(run_id, inspection)
             if inspection.status != "inspected":
-                loader.complete_source_file(source_id, staged_records=0, exact_duplicates=0, validation_warnings=0)
-                completed_files += 1
+                loader.fail_source_file(
+                    source_id,
+                    warning=inspection.warning,
+                    staged_records=0,
+                    exact_duplicates=0,
+                    validation_warnings=0,
+                )
                 continue
-            file_staged = file_duplicates = file_warnings = 0
-            records_batch = []
-            decisions_batch = []
-            record_limit = max_rows_per_file if max_rows_per_file is not None else None
-            records = iter_staged_records(inspection)
-            if record_limit is not None:
-                records = islice(records, record_limit)
-            for record in records:
-                decision = deduplicator.check(record)
-                records_batch.append(record)
-                decisions_batch.append(decision)
-                file_duplicates += int(decision.is_exact_duplicate)
-                file_warnings += len(validate_record(record))
-                if len(records_batch) >= batch_size:
+            try:
+                file_staged = file_duplicates = file_warnings = 0
+                records_batch = []
+                decisions_batch = []
+                record_limit = max_rows_per_file if max_rows_per_file is not None else None
+                records = iter_staged_records(inspection)
+                if record_limit is not None:
+                    records = islice(records, record_limit)
+                for record in records:
+                    decision = deduplicator.check(record)
+                    records_batch.append(record)
+                    decisions_batch.append(decision)
+                    file_duplicates += int(decision.is_exact_duplicate)
+                    file_warnings += len(validate_record(record))
+                    if len(records_batch) >= batch_size:
+                        file_staged += loader.stage_records(run_id, source_id, records_batch, decisions_batch)
+                        records_batch, decisions_batch = [], []
+                if records_batch:
                     file_staged += loader.stage_records(run_id, source_id, records_batch, decisions_batch)
-                    records_batch, decisions_batch = [], []
-            if records_batch:
-                file_staged += loader.stage_records(run_id, source_id, records_batch, decisions_batch)
-            file_staged, file_duplicates, file_warnings = loader.source_file_stats(source_id)
+                file_staged, file_duplicates, file_warnings = loader.source_file_stats(source_id)
+            except Exception as error:
+                file_staged, file_duplicates, file_warnings = loader.source_file_stats(source_id)
+                loader.fail_source_file(
+                    source_id,
+                    warning=f"{type(error).__name__}: {error}",
+                    staged_records=file_staged,
+                    exact_duplicates=file_duplicates,
+                    validation_warnings=file_warnings,
+                )
+                statuses["inspected"] -= 1
+                if not statuses["inspected"]:
+                    del statuses["inspected"]
+                statuses["failed"] += 1
+                staged_records += file_staged
+                exact_duplicates += file_duplicates
+                validation_warnings += file_warnings
+                continue
             loader.complete_source_file(
                 source_id,
                 staged_records=file_staged,
