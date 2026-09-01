@@ -2,6 +2,7 @@ import csv
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 
+from ingestion.column_mapper import map_row_values
 from ingestion.models import FileInspection, SheetInspection, StagedRecord
 
 
@@ -89,7 +90,7 @@ def _stage_rows(
         if not any(cells):
             continue
         raw_values = {header: cells[index] if index < len(cells) else "" for index, header in enumerate(headers)}
-        mapped_values = {field: raw_values.get(header, "") for field, header in sheet.mapped_columns.items()}
+        mapped_values = map_row_values(headers, raw_values)
         yield StagedRecord(
             source_relative_path=inspection.source.relative_path,
             source_sheet=sheet.sheet_name,

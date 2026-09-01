@@ -55,7 +55,13 @@ class PostgresStagingLoader:
     def completed_source_paths(self, run_id: uuid.UUID) -> set[str]:
         with self._connection.cursor() as cursor:
             cursor.execute(
-                "SELECT relative_path FROM source_files WHERE ingestion_run_id = %s AND status = 'completed'",
+                """
+                SELECT relative_path
+                FROM source_files
+                WHERE ingestion_run_id = %s
+                  AND status = 'completed'
+                  AND warning IS NULL
+                """,
                 (run_id,),
             )
             return {row[0] for row in cursor.fetchall()}
@@ -86,6 +92,28 @@ class PostgresStagingLoader:
                 WHERE id = %s
                 """,
                 (staged_records, exact_duplicates, validation_warnings, source_id),
+            )
+        self._connection.commit()
+
+    def fail_source_file(
+        self,
+        source_id: uuid.UUID,
+        *,
+        warning: str | None,
+        staged_records: int,
+        exact_duplicates: int,
+        validation_warnings: int,
+    ) -> None:
+        """Persist a source-level failure without changing its staged raw rows."""
+        with self._connection.cursor() as cursor:
+            cursor.execute(
+                """
+                UPDATE source_files
+                SET status = 'failed', warning = %s, completed_at = NULL,
+                    staged_records = %s, exact_duplicates = %s, validation_warnings = %s
+                WHERE id = %s
+                """,
+                (warning, staged_records, exact_duplicates, validation_warnings, source_id),
             )
         self._connection.commit()
 
